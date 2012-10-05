@@ -1,6 +1,6 @@
 to run example:
 1. cd ../plugin; mvn clean install
 2. come back to this dir
-3. mvn bundlemgr:hi
+3. mvn bundlemgr:upload
 
 note: in order for a maven prefix to get be used, you need to configure build.plugins to use it in your pom.xml; otherwise mvn will not find it, even if it is in your local repository

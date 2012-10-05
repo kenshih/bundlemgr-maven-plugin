@@ -1,18 +1,19 @@
 package com.kenshih.osgi;
 
+import java.io.IOException;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * Goal which touches a timestamp file.
+ * Goal uploads an osgi bundle
  *
- * goal hi
+ * goal upload
  * 
- * phase process-sources
  */
-@Mojo( name = "hi")
+@Mojo( name = "upload")
 public class BundleMgrMojo
     extends AbstractMojo
 {
@@ -21,15 +22,29 @@ public class BundleMgrMojo
      * parameter expression="${project.build.directory}"
      * required
      */
-	 @Parameter( property = "str", 
+	 @Parameter( property = "bundlepath", 
              required = true, 
-             defaultValue = "${project.build.directory}" )
-    private String string;
+             defaultValue = "/Users/kenshih/Documents/workspace/github/bundle-installer/generated/bundle-installer.jar" )
+    private String bundlepath;
 
     public void execute()
         throws MojoExecutionException
     {
-    	System.out.println("got here with string: "+string);
+		Post post = Post.createPost("localhost", 4502, "admin", "admin");
+		try {
+			String result = post.filePost(bundlepath);
+			post.shutdown();
+			if(result.contains("302"))
+				System.out.println("Installed: "+bundlepath);
+			else
+				System.out.println("Failed install of: "+bundlepath+ " at bundlemgr servlet");
+		}
+		catch (IOException e){
+			System.out.println("Failed install of: "+bundlepath);
+		}
+		finally {
+			post.shutdown();
+		}
        
     }
 }
